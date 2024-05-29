@@ -1,6 +1,6 @@
 # library
 library(ggplot2)
-
+resDir = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/figures/"
 input_path = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/deseq2_out/"
 chrom = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/adata_var_nsclc_chrom.csv")
 colnames(chrom)[2] <- "gene_id"
@@ -36,5 +36,6 @@ n_deg <- c(length(normal_genes_X),length(normal_genes_Y), length(normal_genes_au
 data <- data.frame(origin,condition,n_deg)
 
 # Stacked
-ggplot(data, aes(fill=condition, y=n_deg, x=origin)) + 
-  geom_bar(position="dodge", stat="identity")
+p <- ggplot(data, aes(fill=condition, y=n_deg, x=origin)) + 
+  geom_bar(position="dodge", stat="identity") 
+  ggsave(filename = paste0(resDir,"deg_stacked_plot.png"), plot = p)
