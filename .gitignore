@@ -8,3 +8,6 @@ __pycache__
 tmp/
 work/
 .DS_Store
+*.log
+*.out
+*.err
