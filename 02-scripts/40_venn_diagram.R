@@ -20,12 +20,12 @@ normal_deg = read_csv(paste0(input_path, "nsclc_gender_normal_all_genes_DESeq2_r
 tumor_deg = read_csv(paste0(input_path, "nsclc_gender_tumor_all_genes_DESeq2_result.csv"))
 tumor_and_normal_deg = read_csv(paste0(input_path, "nsclc_gender_tumor_and_normal_all_genes_DESeq2_result.csv"))
 
-# Assuming ch_df and normal are your dataframes
+
 normal_deg_merged <- merge(normal_deg, chrom[, c("gene_id", "chromosome_name")], by = "gene_id", all.x = TRUE)
 tumor_deg_merged <- merge(tumor_deg, chrom[, c("gene_id", "chromosome_name")], by = "gene_id", all.x = TRUE)
 tumor_and_normal_deg_merged <- merge(tumor_and_normal_deg, chrom[, c("gene_id", "chromosome_name")], by = "gene_id", all.x = TRUE)
 
-# Assuming normal is your dataframe
+
 normal_genes_X <- normal_deg_merged$gene_id[normal_deg_merged$chromosome_name == "X"]
 normal_genes_X <-na.omit(normal_genes_X)
 normal_genes_Y <- normal_deg_merged$gene_id[normal_deg_merged$chromosome_name == "Y"]
