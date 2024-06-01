@@ -41,9 +41,9 @@ Optional options:
 
 library("conflicted")
 library("docopt")
-#arguments <- docopt(doc, version = "0.1")
+arguments <- docopt(doc, version = "0.1")
 
-#print(arguments)
+print(arguments)
 
 library("BiocParallel")
 library("DESeq2")
@@ -70,65 +70,65 @@ library("biomaRt")
 remove_ensg_version = function(x) gsub("\\.[0-9]*$", "", x)
 
 
-#sampleAnnotationCSV <- arguments$sample_sheet
-#readCountFile <- arguments$count_table
-#result_dir = arguments$result_dir
-#c1 = arguments$c1
-#c2 = arguments$c2
-#dir.create(result_dir, recursive=TRUE, showWarnings=FALSE)
-#paired_grp <- arguments$paired_grp
-#
-##prefix and plot title
-#prefix <- arguments$prefix
-#plot_title <- arguments$plot_title
-#
-## Sample information and contrasts
-#nfcore = arguments$nfcore
-#cond_col = arguments$condition_col
-#sample_col = arguments$sample_col
-#contrast = c(cond_col,c1, c2)
-#gene_id_type = arguments$gene_id_type
-#covariate_formula = arguments$covariate_formula
-#remove_batch_effect = arguments$remove_batch_effect
-#batch_col = arguments$batch_col
-#
-##Cutoff
-#fdr_cutoff = as.numeric(arguments$fdr_cutoff)
-#fc_cutoff = as.numeric(arguments$fc_cutoff)
-#
-##GTF for Biotype QC
-#gtf_file = arguments$gtf_file
-#
-## Other
-#n_cpus = as.numeric(arguments$n_cpus)
-#skip_gsea = arguments$skip_gsea
-#genes_of_interest = arguments$genes_of_interest
-#
-##set organism (human or mouse)
-#organism = arguments$organism
-#
-##save R workspace
-#save_ws = arguments$save_workspace
-#
+sampleAnnotationCSV <- arguments$sample_sheet
+readCountFile <- arguments$count_table
+result_dir = arguments$result_dir
+c1 = arguments$c1
+c2 = arguments$c2
+dir.create(result_dir, recursive=TRUE, showWarnings=FALSE)
+paired_grp <- arguments$paired_grp
+
+#prefix and plot title
+prefix <- arguments$prefix
+plot_title <- arguments$plot_title
+
+# Sample information and contrasts
+nfcore = arguments$nfcore
+cond_col = arguments$condition_col
+sample_col = arguments$sample_col
+contrast = c(cond_col,c1, c2)
+gene_id_type = arguments$gene_id_type
+covariate_formula = arguments$covariate_formula
+remove_batch_effect = arguments$remove_batch_effect
+batch_col = arguments$batch_col
+
+#Cutoff
+fdr_cutoff = as.numeric(arguments$fdr_cutoff)
+fc_cutoff = as.numeric(arguments$fc_cutoff)
+
+#GTF for Biotype QC
+gtf_file = arguments$gtf_file
+
+# Other
+n_cpus = as.numeric(arguments$n_cpus)
+skip_gsea = arguments$skip_gsea
+genes_of_interest = arguments$genes_of_interest
+
+#set organism (human or mouse)
+organism = arguments$organism
+
+#save R workspace
+save_ws = arguments$save_workspace
+
 
 #DEBUG parameters 
-sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/samplesheet.csv"
-readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/counts.csv"
-resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/deseq2_out" 
-c1="male"
-c2="female"
-cond_col ="sex"
-contrast = c(cond_col, c1, c2)
-organism="human"
-n_cpus = 8
-plot_title="DESEQ2"
-prefix = "nsclc_gender_tumor_and_normal"
-gene_id_type="ENSEMBL"
-sample_col="sample"
-covariate_formula="+origin + disease +  tumor_stage"
-covariate_formula=""
-fdr_cutoff=0.1
-fc_cutoff=1
+#sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/samplesheet_tumor.csv"
+#readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/counts_tumor.csv"
+#resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/deseq2_out" 
+#c1="male"
+#c2="female"
+#cond_col ="sex"
+#contrast = c(cond_col, c1, c2)
+#organism="human"
+#n_cpus = 8
+#plot_title="DESEQ2"
+#prefix = "nsclc_gender_tumor"
+#gene_id_type="ENSEMBL"
+#sample_col="sample"
+#covariate_formula=""
+#covariate_formula=""
+#fdr_cutoff=0.1
+#fc_cutoff=1
 
 
 # Reading the Annotation sample csv file
