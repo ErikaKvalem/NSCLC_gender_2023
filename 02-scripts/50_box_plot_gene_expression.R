@@ -5,11 +5,15 @@ resDir = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis
 input_path = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/deseq2_out/"
 chrom = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/adata_var_nsclc_chrom.csv")
 colnames(chrom)[2] <- "gene_id"
-counts = read.table("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/counts.csv",sep= ",", header=TRUE, row.names=1)
-samplesheet = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/samplesheet.csv")
 normal_deg = read_csv(paste0(input_path, "nsclc_gender_normal_sig_fc_genes_DESeq2_result.csv"))
 tumor_deg = read_csv(paste0(input_path, "nsclc_gender_tumor_sig_fc_genes_DESeq2_result.csv"))
 tumor_and_normal_deg = read_csv(paste0(input_path, "nsclc_gender_tumor_and_normal_sig_fc_genes_DESeq2_result.csv"))
+
+#######################
+
+log1p_norm_counts = read.table("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/log1p_norm_counts.csv",sep= ",", header=TRUE, row.names=1)
+samplesheet = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/samplesheet.csv")
+######################
 
 # Assuming ch_df and normal are your dataframes
 normal_deg_merged <- merge(normal_deg, chrom[, c("gene_id", "chromosome_name")], by = "gene_id", all.x = TRUE)
@@ -36,17 +40,7 @@ sample_list <- rownames(transposed_gene_counts)
 transposed_gene_counts$sample <- sample_list
 
 
-# Reset row names
-rownames(transposed_gene_counts) <- NULL
-merged_data <- merge(transposed_gene_counts, samplesheet, by.x = "sample", by.y = "sample")
-
-# Log normalization
-log_norm <- function(x) {
-  log(x + 1)  # Adding 1 to avoid log(0)
-}
-
-normalized_log <- as.data.frame(lapply(transposed_gene_counts, log_norm))
-print("Log normalized dataframe:")
+###########################################################################################
 
 library(tidyverse)
 library(hrbrthemes)
@@ -82,4 +76,32 @@ ggplot(mtcars, aes(x=as.factor(cyl), y=mpg)) +
   geom_boxplot(fill="slateblue", alpha=0.2) + 
   xlab("cyl")
 
+normed_df <- as.data.frame(normed)
 
+
+# Join metadata for visualizing groups or features
+expression_plot <- left_join(x = samplesheet, 
+                             y = normed_df, 
+                             by = "sample")
+# Gather values to plot into a single column
+expression_plot <- pivot_longer(normed_df,
+                                cols = 2:25,
+                                names_to = "samples",
+                                values_to = "normalized_counts")
+
+
+library(ggplot2)
+library(ggsignif)
+ggplot(mpg, aes(class, hwy)) +
+  geom_boxplot() +
+  geom_signif(
+    annotations = c("**", "***"),
+    comparisons = list(c("2seater", "compact"), c("midsize", "minivan")))
+
+ ###########################################################################
+
+log1p_norm_counts_t <- t(log1p_norm_counts)
+log1p_norm_counts_t$sample <- row.names(log1p_norm_counts_t)
+subset <- log1p_norm_counts_t[ ,1:4]
+subset <- as.data.frame(subset)
+merge <- rbind(subset,samplesheet)
