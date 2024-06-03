@@ -8,7 +8,7 @@ library(forcats)
 log1p_norm_counts = read.table("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/log1p_norm_counts.csv",sep= ",", header=TRUE, row.names=1)
 samplesheet = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/samplesheet.csv")
 
-resDir = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/figures/"
+resDir = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/figures/violin_plot/"
 input_path = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/deseq2_out/"
 chrom = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/adata_var_nsclc_chrom.csv")
 colnames(chrom)[2] <- "gene_id"
@@ -21,8 +21,8 @@ tumor_and_normal_deg = read_csv(paste0(input_path, "nsclc_gender_tumor_and_norma
 df_nc <- as.data.frame(log1p_norm_counts)
 #################################################### NORMAL
 # List of gene names
-index_list <- head(normal_deg$gene_id)
-index_list_name <- head(normal_deg$gene_name)
+index_list <- head(normal_deg$gene_id,15)
+index_list_name <- head(normal_deg$gene_name,15)
 
 # Initialize an empty dataframe to store the result
 result <- data.frame()
@@ -66,8 +66,8 @@ for (i in seq_along(index_list)) {
 
 ######################################################## TUMOR
 # List of gene names
-index_list_tumor <- head(tumor_deg$gene_id)
-index_list_name_tumor <- head(tumor_deg$gene_name)
+index_list_tumor <- head(tumor_deg$gene_id,15)
+index_list_name_tumor <- head(tumor_deg$gene_name,30)
 
 # Initialize an empty dataframe to store the result
 result2 <- data.frame()
@@ -127,16 +127,16 @@ r1 <- result %>%
   ggplot(aes(x = fct_inorder(gn_sex), y = log1p_norm, fill=gn_sex)) +
   geom_violin() +
   geom_violin(trim=FALSE)+
-  scale_fill_manual(values=c("red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue"))+
-  ggsignif::geom_signif(
-    comparisons = list(
-      unique(result$gn_sex)[1:2],
-      unique(result$gn_sex)[3:4],
-      unique(result$gn_sex)[5:6],
-      unique(result$gn_sex)[7:8],
-      unique(result$gn_sex)[9:10],
-      unique(result$gn_sex)[11:12]),y_position = c(11,11,11,11,11,11)
-  )+
+  scale_fill_manual(values=c("red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue"))+
+ #ggsignif::geom_signif(
+ #  comparisons = list(
+ #    unique(result$gn_sex)[1:2],
+ #    unique(result$gn_sex)[3:4],
+ #    unique(result$gn_sex)[5:6],
+ #    unique(result$gn_sex)[7:8],
+ #    unique(result$gn_sex)[9:10],
+ #    unique(result$gn_sex)[11:12]),y_position = c(11,11,11,11,11,11)
+ #)+
   guides(fill = FALSE)+
   
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -153,16 +153,16 @@ r2 <- result2 %>%
   ggplot(aes(x = fct_inorder(gn_sex), y = log1p_norm, fill=gn_sex)) +
   geom_violin() +
   geom_violin(trim=FALSE)+
-  scale_fill_manual(values=c("red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue"))+
-  ggsignif::geom_signif(
-    comparisons = list(
-      unique(result2$gn_sex)[1:2],
-      unique(result2$gn_sex)[3:4],
-      unique(result2$gn_sex)[5:6],
-      unique(result2$gn_sex)[7:8],
-      unique(result2$gn_sex)[9:10],
-      unique(result2$gn_sex)[11:12]),y_position = c(11,11,11,11,11,11)
-  )+
+  scale_fill_manual(values=c("red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue"))+
+  #ggsignif::geom_signif(
+  #  comparisons = list(
+  #    unique(result2$gn_sex)[1:2],
+  #    unique(result2$gn_sex)[3:4],
+  #    unique(result2$gn_sex)[5:6],
+  #    unique(result2$gn_sex)[7:8],
+  #    unique(result2$gn_sex)[9:10],
+  #    unique(result2$gn_sex)[11:12]),y_position = c(11,11,11,11,11,11)
+  #)+
   guides(fill = FALSE)+
   
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -179,21 +179,21 @@ p <- results_merged %>%
   ggplot(aes(x = fct_inorder(gn_sex), y = log1p_norm, fill=gn_sex)) +
   geom_violin() +
   geom_violin(trim=FALSE)+
-  scale_fill_manual(values=c("red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue","red","blue", "red","blue", "red","blue", "red","blue", "red","blue"))+
-  ggsignif::geom_signif(
-    comparisons = list(
-      unique(result$gn_sex)[1:2],
-      unique(result$gn_sex)[3:4],
-      unique(result$gn_sex)[5:6],
-      unique(result$gn_sex)[7:8],
-      unique(result$gn_sex)[9:10],
-      unique(result$gn_sex)[11:12],c("AKR1C3_male","AKR1C3_female"),
-      c("KRT19_male","KRT19_female"),
-      c("KRT8_male","KRT8_female"),
-      c("KRT7_male","KRT7_female"),
-      c("KRT17_male","KRT17_female")),
-    y_position = c(11,11,11,11,11,11,11,11,11,11,11)
-  )+
+  scale_fill_manual(values=c("red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue","red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue", "red","blue"))+
+  #ggsignif::geom_signif(
+  #  comparisons = list(
+  #    unique(result$gn_sex)[1:2],
+  #    unique(result$gn_sex)[3:4],
+  #    unique(result$gn_sex)[5:6],
+  #    unique(result$gn_sex)[7:8],
+  #    unique(result$gn_sex)[9:10],
+  #    unique(result$gn_sex)[11:12],c("AKR1C3_male","AKR1C3_female"),
+  #    c("KRT19_male","KRT19_female"),
+  #    c("KRT8_male","KRT8_female"),
+  #    c("KRT7_male","KRT7_female"),
+  #    c("KRT17_male","KRT17_female")),
+  #  y_position = c(11,11,11,11,11,11,11,11,11,11,11)
+  #)+
   guides(fill = FALSE)+
   
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -201,5 +201,5 @@ p <- results_merged %>%
 # Use vars() to supply faceting variables:
 p <- p + facet_wrap(vars(condition), scales = "free_y")
 
-
-ggsave(paste0(resDir,"head_tumor_and_normal_deg_violin_plot.jpg"), plot = p, width = 20, height = 10)  # Adjust width and height as needed
+p
+#ggsave(paste0(resDir,"head_tumor_and_normal_deg_violin_plot.jpg"), plot = p, width = 20, height = 10)  # Adjust width and height as needed

@@ -12,7 +12,7 @@ library("ggvenn")
 library("gplots") 
 
 input_path = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/deseq2_out/"
-resDir = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/figures"
+resDir = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/figures/venn_diagram"
 chrom = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/adata_var_nsclc_chrom.csv")
 colnames(chrom)[2] <- "gene_id"
 
@@ -74,4 +74,15 @@ ggsave(filename, venn_y, width = 6, height = 6, units = "in", dpi = 300)
 filename <- file.path(resDir, "autosomal_venn_diagram.jpg")
 ggsave(filename, venn_autosomal, width = 6, height = 6, units = "in", dpi = 300)
 
+########################
+
+
+# use list as input 
+all <-list(normal = c(normal_deg_merged$gene_id),tumor= c(tumor_deg_merged$gene_id)) 
+venn_all <-ggvenn(all)
+
+
+
+filename <- file.path(resDir, "all_venn_diagram.jpg")
+ggsave(filename, venn_all, width = 6, height = 6, units = "in", dpi = 300)
 
