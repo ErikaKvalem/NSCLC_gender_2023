@@ -43,7 +43,7 @@ library("conflicted")
 library("docopt")
 #arguments <- docopt(doc, version = "0.1")
 
-#print(arguments)
+# print(arguments)
 
 library("BiocParallel")
 library("DESeq2")
