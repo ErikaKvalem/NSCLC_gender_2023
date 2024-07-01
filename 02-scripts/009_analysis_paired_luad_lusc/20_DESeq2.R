@@ -112,9 +112,9 @@ remove_ensg_version = function(x) gsub("\\.[0-9]*$", "", x)
 #
 #
 # DEBUG parameters 
-sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/tmp/007_re_analysis_dataset/tables/input/samplesheet_normal.csv"
-readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/tmp/007_re_analysis_dataset/tables/input/counts_normal.csv"
-resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/tmp/007_re_analysis_dataset/tables/deseq2_out" 
+sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/009_analysis_paired_luad_lusc/tables/input/samplesheet.csv"
+readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/009_analysis_paired_luad_lusc/tables/input/counts.csv"
+resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/009_analysis_paired_luad_lusc/tables/deseq2_out" 
 c1="male"
 c2="female"
 cond_col ="sex"
@@ -122,10 +122,11 @@ contrast = c(cond_col, c1, c2)
 organism="human"
 n_cpus = 8
 plot_title="DESEQ2"
-prefix = "nsclc_gender_normal"
+prefix = "nsclc_gender_all"
 gene_id_type="ENSEMBL"
 sample_col="sample"
-covariate_formula="+dataset"
+covariate_formula=""
+covariate_formula=""
 fdr_cutoff=0.1
 fc_cutoff=1
 
@@ -141,7 +142,8 @@ sampleAnno <- sampleAnno[,-1]
 
 # Reading the Count matrix tsv file
 count_mat <- read_csv(readCountFile)
-#colnames(count_mat)[1] <- "gene_id"
+
+# colnames(count_mat)[1] <- "gene_id"
 
 ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 ensembl_ids <- c(count_mat$gene_id) 
@@ -162,6 +164,10 @@ count_mat <- count_mat[, -ncol(count_mat)]
 count_mat <- count_mat |>
   column_to_rownames("gene_id") |>
   round()
+
+
+colnames(count_mat) <- gsub("-", "_", colnames(count_mat))
+
 
 # Check if names are the same
 if (!all(rownames(sampleAnno) %in% colnames(count_mat))) {
