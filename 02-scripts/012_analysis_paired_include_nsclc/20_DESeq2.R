@@ -112,9 +112,9 @@ remove_ensg_version = function(x) gsub("\\.[0-9]*$", "", x)
 #
 #
 # DEBUG parameters 
-sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_analysis_paired_include_nsclc/tables/input/samplesheet_normal.csv"
-readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_analysis_paired_include_nsclc/tables/input/counts_normal.csv"
-resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_analysis_paired_include_nsclc/tables/deseq2_out/not_corrected_ds" 
+sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/input/samplesheet.csv"
+readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/input/counts.csv"
+resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/deseq2_out/corrected_ds" 
 c1="male"
 c2="female"
 cond_col ="sex"
@@ -122,10 +122,10 @@ contrast = c(cond_col, c1, c2)
 organism="human"
 n_cpus = 8
 plot_title="DESEQ2"
-prefix = "nsclc_gender_normal"
+prefix = "nsclc_gender_all"
 gene_id_type="ENSEMBL"
 sample_col="sample"
-covariate_formula=""
+covariate_formula="+ dataset"
 fdr_cutoff=0.1
 fc_cutoff=1
 

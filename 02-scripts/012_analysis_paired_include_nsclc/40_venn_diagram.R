@@ -11,8 +11,8 @@ library("ggvenn")
 # load gplots package 
 library("gplots") 
 
-input_path = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_luad_lusc_include_guon/tables/deseq2_out/not_corrected_ds/"
-resDir = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_luad_lusc_include_guon/figures/venn_diagram/not_corrected_ds"
+input_path = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_luad_lusc_include_guon/tables/deseq2_out/corrected_ds/"
+resDir = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_luad_lusc_include_guon/figures/venn_diagram/corrected_ds"
 chrom = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/adata_var_nsclc_chrom.csv")
 colnames(chrom)[2] <- "gene_id"
 
