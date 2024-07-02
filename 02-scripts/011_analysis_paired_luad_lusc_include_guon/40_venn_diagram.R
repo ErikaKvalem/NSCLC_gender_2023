@@ -11,14 +11,14 @@ library("ggvenn")
 # load gplots package 
 library("gplots") 
 
-input_path = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_luad_lusc_include_guon/tables/deseq2_out/not_corrected_ds/"
-resDir = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_luad_lusc_include_guon/figures/venn_diagram/not_corrected_ds"
+input_path = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_analysis_paired_include_nsclc/tables/deseq2_out/corrected_ds/"
+resDir = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_analysis_paired_include_nsclc/figures/venn_diagram/corrected_ds/sig_fc/"
 chrom = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/007_re_analysis/tables/input/adata_var_nsclc_chrom.csv")
 colnames(chrom)[2] <- "gene_id"
 
-normal_deg = read_csv(paste0(input_path, "nsclc_gender_normal_all_genes_DESeq2_result.csv"))
-tumor_deg = read_csv(paste0(input_path, "nsclc_gender_tumor_all_genes_DESeq2_result.csv"))
-tumor_and_normal_deg = read_csv(paste0(input_path, "nsclc_gender_all_all_genes_DESeq2_result.csv"))
+normal_deg = read_csv(paste0(input_path, "nsclc_gender_normal_sig_fc_genes_DESeq2_result.csv"))
+tumor_deg = read_csv(paste0(input_path, "nsclc_gender_tumor_sig_fc_genes_DESeq2_result.csv"))
+tumor_and_normal_deg = read_csv(paste0(input_path, "nsclc_gender_all_sig_fc_genes_DESeq2_result.csv"))
 
 
 normal_deg_merged <- merge(normal_deg, chrom[, c("gene_id", "chromosome_name")], by = "gene_id", all.x = TRUE)
@@ -51,7 +51,7 @@ tumor_and_normal_genes_autosomal <- na.omit(tumor_and_normal_genes_autosomal)
 # list as direct parameter 
 venn(list(normal_x=c(normal_genes_X),tumor_x=c(tumor_genes_X),tumor_and_normal_x=c(tumor_and_normal_genes_X)))
 venn(list(normal_y=c(normal_genes_Y),tumor_y=c(tumor_genes_Y),tumor_and_normal_y=c(tumor_and_normal_genes_Y)))
-venn(list(normal_autosomal=c(normal_genes_autosomal),tumor_autosomal=c(tumor_genes_autosomal),tumor_and_normal_autosomal=c(tumor_and_normal_genes_autosomal)))
+venn(list(normal_autosomal=c(normal_genes_autosomal),tumor_autosomal=c(tumor_genes_autosomal),tumor_and_norm1al_autosomal=c(tumor_and_normal_genes_autosomal)))
 
 
 ########### 2 circles 
@@ -83,6 +83,6 @@ venn_all <-ggvenn(all)
 
 
 
-filename <- file.path(resDir, "all_venn_diagram.jpg")
+filename <- file.path(resDir, "sig_fc_venn_diagram.jpg")
 ggsave(filename, venn_all, width = 6, height = 6, units = "in", dpi = 300)
 
