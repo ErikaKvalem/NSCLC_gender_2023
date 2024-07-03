@@ -43,7 +43,7 @@ library("conflicted")
 library("docopt")
 #arguments <- docopt(doc, version = "0.1")
 
-# print(arguments)
+#print(arguments)
 
 library("BiocParallel")
 library("DESeq2")
@@ -110,13 +110,11 @@ remove_ensg_version = function(x) gsub("\\.[0-9]*$", "", x)
 ##save R workspace
 #save_ws = arguments$save_workspace
 #
-#
-# DEBUG parameters 
+
+#DEBUG parameters 
 sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/input/samplesheet_tumor.csv"
 readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/input/counts_tumor.csv"
-resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/deseq2_out/corrected_ds" 
-resDir_plot="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/figures/volcano/" 
-
+resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/figures/volcano/" 
 c1="male"
 c2="female"
 cond_col ="sex"
@@ -143,8 +141,7 @@ sampleAnno <- sampleAnno[,-1]
 
 # Reading the Count matrix tsv file
 count_mat <- read_csv(readCountFile)
-
-# colnames(count_mat)[1] <- "gene_id"
+#colnames(count_mat)[1] <- "gene_id"
 
 ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 ensembl_ids <- c(count_mat$gene_id) 
@@ -165,11 +162,7 @@ count_mat <- count_mat[, -ncol(count_mat)]
 count_mat <- count_mat |>
   column_to_rownames("gene_id") |>
   round()
-
-
 colnames(count_mat) <- gsub("-", "_", colnames(count_mat))
-
-
 # Check if names are the same
 if (!all(rownames(sampleAnno) %in% colnames(count_mat))) {
   print('Row names in sample annotation and column names in count matrix are not the same')
@@ -194,7 +187,7 @@ dds.res <- DESeq(dds, parallel = (n_cpus > 1))
 contrasts <- list(c(cond_col, c1, c2))
 names(contrasts) <- sprintf("%s_vs_%s", c1, c2)
 
-# ## IHW
+### IHW
 
 # Use of IHW for p value adjustment of DESeq2 results
 resSHRINK  <- lfcShrink(dds.res, contrast= contrast, type ="normal") #specifying "normal" because "apeglm" need coef instead of contrast. 
@@ -228,29 +221,18 @@ resIHWsig_fc <- resIHWsig %>% filter(abs(log2FoldChange) > fc_cutoff)
 
 
 # write results to TSV files
-write_csv(resIHW_gene_name,  paste0(resDir,"/",prefix, "_all_genes_DESeq2_result.csv"))
-write_csv(resIHWsig,  paste0(resDir,"/",prefix, "_sig_genes_DESeq2_result.csv"))
-write_csv(resIHWsig_fc,  paste0(resDir,"/",prefix, "_sig_fc_genes_DESeq2_result.csv"))
-
-
-
+#write_csv(resIHW_gene_name,  paste0(resDir,"/",prefix, "_all_genes_DESeq2_result.csv"))
+#write_csv(resIHWsig,  paste0(resDir,"/",prefix, "_sig_genes_DESeq2_result.csv"))
+#write_csv(resIHWsig_fc,  paste0(resDir,"/",prefix, "_sig_fc_genes_DESeq2_result.csv"))
+#fdr_cutoff=0.1 fc_cutoff=1 
 v <- EnhancedVolcano(resIHW_gene_name,
-                     lab = resIHW_gene_name$gene_name,
-                     x = 'log2FoldChange',
-                     y = 'pvalue',
-                     pCutoff = fdr_cutoff,
-                     FCcutoff = fc_cutoff,
-                     caption = paste0("fold change cutoff: ", round(2**fc_cutoff, 1), ", adj.p-value cutoff: ", fdr_cutoff))
+                lab = resIHW_gene_name$gene_name,
+                x = 'log2FoldChange',
+                y = 'pvalue')
 v
 
-v <- EnhancedVolcano(resIHWsig_fc,
-                     lab = resIHWsig_fc$gene_name,
-                     selectLab = c("RPS4Y1",  "XIST"  ,  "ANGPTL4", "CST6"  ,  "SFTPA2",  "CTSE" ,   "MAL2",    "SFTA3" ),
-                     x = 'log2FoldChange',
-                     y = 'pvalue',
-                     pCutoff = fdr_cutoff,
-                     FCcutoff = fc_cutoff,
-                     caption = paste0("fold change cutoff: ", round(2**fc_cutoff, 1), ", adj.p-value cutoff: ", fdr_cutoff))
-v
 
-ggsave(paste0(resDir_plot,prefix,"_deg_all_volcano_plot.jpg"), plot = v, width = 8, height = 10)  
+ggsave(paste0(resDir,prefix,"_deg_all_volcano_plot.jpg"), plot = v, width = 8, height = 10)  
+
+
+
