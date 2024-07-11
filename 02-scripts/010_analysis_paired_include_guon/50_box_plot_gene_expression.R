@@ -128,6 +128,21 @@ results_merged <- rbind(result,result2)
 
 
 ############################################# GGPUBR
+test_results <- result2 %>%
+  group_by(gene_name) %>%
+  wilcox_test(log1p_norm ~ sex) %>%
+  ungroup()
+covariate <- result2 %>%
+  group_by(gene_name) %>%
+  summarize(mean_expression = mean(log1p_norm)) %>%
+  pull(mean_expression)
+
+# Perform IHW adjustment
+ihw_result <- ihw(test_results$p, covariate, alpha = 0.1)
+
+# Extract adjusted p-values
+test_results$p.adj <- adj_pvalues(ihw_result)
+
 
 stat.test <- result |>
   group_by(gene_name)  |>
@@ -146,18 +161,19 @@ p  <-  ggviolin(result, x = "sex", y = "log1p_norm", trim=FALSE, title="Top 20 N
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.1))) +
   geom_jitter(height = 0, width = 0.1, aes(colour = dataset)) 
 p
-ggsave(paste0(resDir,"normal_deg_violin_plot_corrected_all.jpg"), plot = p, width = 10, height = 10)  # Adjust width and height as needed
+#ggsave(paste0(resDir,"normal_deg_violin_plot_corrected_all.jpg"), plot = p, width = 10, height = 10)  # Adjust width and height as needed
 
 
 
 stat.test <- result2 |>
   group_by(gene_name)  |>
   wilcox_test(log1p_norm ~ sex) |>
-  adjust_pvalue(method = "BH") |>
+  adjust_pvalue(method ="fdr") |>
   add_significance("p.adj")
 stat.test$p.scient <- format(stat.test$p.adj, scientific = TRUE, digits = 3)
 
 stat.test <- stat.test %>% add_xy_position(x = "sex")
+
 
 p2<-  ggviolin(result2, x = "sex", y = "log1p_norm", trim=FALSE,  title="Top 20 Tumor DE genes corrected") +  
   # scale_color_manual(values = c("male" = "blue", "female" = "red")) +  # Customize colors for "sex"
@@ -167,5 +183,5 @@ p2<-  ggviolin(result2, x = "sex", y = "log1p_norm", trim=FALSE,  title="Top 20 
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.1))) +
   geom_jitter(height = 0, width = 0.1, aes(colour = dataset)) 
 p2
-ggsave(paste0(resDir,"tumor_deg_violin_plot_corrected_all.jpg"), plot = p2, width = 10, height = 10)  # Adjust width and height as needed
+#ggsave(paste0(resDir,"tumor_deg_violin_plot_corrected_all.jpg"), plot = p2, width = 10, height = 10)  # Adjust width and height as needed
 

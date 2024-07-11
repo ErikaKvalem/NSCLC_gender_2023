@@ -231,26 +231,54 @@ resIHWsig_fc <- resIHWsig %>% filter(abs(log2FoldChange) > fc_cutoff)
 write_csv(resIHW_gene_name,  paste0(resDir,"/",prefix, "_all_genes_DESeq2_result.csv"))
 write_csv(resIHWsig,  paste0(resDir,"/",prefix, "_sig_genes_DESeq2_result.csv"))
 write_csv(resIHWsig_fc,  paste0(resDir,"/",prefix, "_sig_fc_genes_DESeq2_result.csv"))
+resIHW_gene_name_tumor = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/deseq2_out/corrected_ds/nsclc_gender_tumor_all_genes_DESeq2_result.csv")
+
+resIHW_gene_name_normal = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/deseq2_out/corrected_ds/nsclc_gender_normal_all_genes_DESeq2_result.csv")
+
+resIHW_gene_name_all = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/deseq2_out/corrected_ds/nsclc_gender_all_all_genes_DESeq2_result.csv")
 
 
-
-v <- EnhancedVolcano(resIHW_gene_name,
-                     lab = resIHW_gene_name$gene_name,
+my_list = c("RPS4Y1",  "XIST"  ,  "ANGPTL4", "CST6"  ,  "SFTPA2",  "CTSE" ,   "MAL2",    "SFTA3" )
+v <- EnhancedVolcano(resIHW_gene_name_tumor,
+                     lab = resIHW_gene_name_tumor$gene_name,
+                    #selectLab =  my_list, 
                      x = 'log2FoldChange',
-                     y = 'pvalue',
+                     y = 'padj',
+                     #pointSize = 1.0,
+                     #labSize = 3.0,
                      pCutoff = fdr_cutoff,
+                    drawConnectors = TRUE,
+                    
                      FCcutoff = fc_cutoff,
                      caption = paste0("fold change cutoff: ", round(2**fc_cutoff, 1), ", adj.p-value cutoff: ", fdr_cutoff))
 v
 
-v <- EnhancedVolcano(resIHWsig_fc,
-                     lab = resIHWsig_fc$gene_name,
-                     selectLab = c("RPS4Y1",  "XIST"  ,  "ANGPTL4", "CST6"  ,  "SFTPA2",  "CTSE" ,   "MAL2",    "SFTA3" ),
+v <- EnhancedVolcano(resIHW_gene_name_normal,
+                     lab = resIHW_gene_name_normal$gene_name,
+                     #selectLab =  my_list, 
                      x = 'log2FoldChange',
-                     y = 'pvalue',
+                     y = 'padj',
+                     #pointSize = 1.0,
+                     #labSize = 3.0,
                      pCutoff = fdr_cutoff,
+                     drawConnectors = TRUE,
+                     
                      FCcutoff = fc_cutoff,
                      caption = paste0("fold change cutoff: ", round(2**fc_cutoff, 1), ", adj.p-value cutoff: ", fdr_cutoff))
 v
 
-ggsave(paste0(resDir_plot,prefix,"_deg_all_volcano_plot.jpg"), plot = v, width = 8, height = 10)  
+v <- EnhancedVolcano(resIHW_gene_name_all,
+                     lab = resIHW_gene_name_all$gene_name,
+                     #selectLab =  my_list, 
+                     x = 'log2FoldChange',
+                     y = 'padj',
+                     #pointSize = 1.0,
+                     #labSize = 3.0,
+                     pCutoff = fdr_cutoff,
+                     drawConnectors = TRUE,
+                     
+                     FCcutoff = fc_cutoff,
+                     caption = paste0("fold change cutoff: ", round(2**fc_cutoff, 1), ", adj.p-value cutoff: ", fdr_cutoff))
+v
+
+
