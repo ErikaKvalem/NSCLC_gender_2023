@@ -5,9 +5,12 @@ library(forcats)
 library(tidyr)
 library(ggpubr)
 library(rstatix)
+
+library(dplyr)
 # #####################
 log1p_norm_counts = read.table("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/input/log1p_norm_counts.csv",sep= ",", header=TRUE, row.names=1)
 samplesheet = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/input/samplesheet.csv")
+counts = read.table("/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/input/counts.csv",sep= ",", header=TRUE, row.names=1)
 
 resDir = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/figures/violin_plot/"
 input_path = "/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/deseq2_out/corrected_ds/"
@@ -19,11 +22,11 @@ tumor_and_normal_deg = read_csv(paste0(input_path, "nsclc_gender_all_all_genes_D
 
 
 # Convert log1p_norm_counts to dataframe
-df_nc <- as.data.frame(log1p_norm_counts)
+df_nc <- as.data.frame(counts)
 #################################################### NORMAL
 # List of gene names
-index_list <- head(normal_deg$gene_id,20)
-index_list_name <- head(normal_deg$gene_name,20)
+index_list <- head(normal_deg$gene_id,8)
+index_list_name <- head(normal_deg$gene_name,8)
 
 # Initialize an empty dataframe to store the result
 result <- data.frame()
@@ -41,8 +44,14 @@ for (i in seq_along(index_list)) {
   # Convert transposed dataframe to data frame
   df_t <- as.data.frame(df_t)
   
+
   # Rename the column to 'log1p_norm'
   colnames(df_t)[colnames(df_t) == index_list[i]] <- 'log1p_norm'
+  
+  df_t$log1p_norm <- scale(df_t$log1p_norm, center = TRUE, scale = TRUE)
+  
+  # Apply the log(x + 1) transformation
+  df_t$log1p_norm <- log1p(df_t$log1p_norm)
   
   # Add 'gene_name' column
   df_t$gene_id <- as.character(index_list[i])
@@ -68,8 +77,8 @@ for (i in seq_along(index_list)) {
 
 ######################################################## TUMOR
 # List of gene names
-index_list_tumor <- head(tumor_deg$gene_id,20)
-index_list_name_tumor <- head(tumor_deg$gene_name,20)
+index_list_tumor <- head(tumor_deg$gene_id,8)
+index_list_name_tumor <- head(tumor_deg$gene_name,8)
 
 # Initialize an empty dataframe to store the result
 result2 <- data.frame()
@@ -87,6 +96,10 @@ for (i in seq_along(index_list_tumor)) {
   
   # Rename the column to 'log1p_norm'
   colnames(df_t)[colnames(df_t) == index_list_tumor[i]] <- 'log1p_norm'
+  df_t$log1p_norm <- scale(df_t$log1p_norm, center = TRUE, scale = TRUE)
+  
+  # Apply the log(x + 1) transformation
+  df_t$log1p_norm <- log1p(df_t$log1p_norm)
   
   # Add 'gene_name' column
   df_t$gene_id <- as.character(index_list_tumor[i])
@@ -128,10 +141,63 @@ results_merged <- rbind(result,result2)
 
 
 ############################################# GGPUBR
+
+#conflicts_prefer(rstatix::filter)
+## Perform Wilcoxon tests and collect p-values
+test_results <- result %>%
+  group_by(gene_name) %>%
+  wilcox_test(log1p_norm ~ sex) %>%
+  ungroup()
+
+# Calculate the covariate (mean expression level) for each gene
+covariate <- result %>%
+  group_by(gene_name) %>%
+  summarize(mean_expression = mean(log1p_norm)) %>%
+  pull(mean_expression)
+
+# Perform IHW adjustment
+ihw_result <- ihw(test_results$p, covariate, alpha = 0.1)
+
+# Extract adjusted p-values
+test_results$p.adj <- adj_pvalues(ihw_result)
+stat.test <- test_results |> add_significance("p", cutpoints = c(0, 1e-04, 0.001, 0.01, 0.1, 1),
+                 symbols = c("****", "***", "**", "*", "ns"))
+
+stat.test$p.scient <- format(stat.test$p.adj, scientific = TRUE, digits = 3)
+
+stat.test <- stat.test %>% add_xy_position(x = "sex")
+stat.test.normal <- stat.test
+
+#stat.test <- result |>
+#  group_by(gene_name)  |>
+#  wilcox_test(log1p_norm ~ sex) |>
+#  adjust_pvalue(method = "fdr") |>
+#  add_significance("p", cutpoints = c(0, 1e-04, 0.001, 0.01, 0.1, 1),
+#                   symbols = c("****", "***", "**", "*", "ns"))
+#stat.test$p.scient <- format(stat.test$p.adj, scientific = TRUE, digits = 3)
+#
+#stat.test <- stat.test %>% add_xy_position(x = "sex")
+#stat.test.normal <- stat.test
+
+p  <-  ggviolin(result, x = "sex", y = "log1p_norm", trim=FALSE, title="Top 20 Normal DE genes corrected") +  
+  # scale_color_manual(values = c("male" = "blue", "female" = "red")) +  # Customize colors for "sex"
+  facet_wrap(~ gene_name) +stat_pvalue_manual(
+    stat.test, bracket.nudge.y = -1, hide.ns = FALSE,
+    label = "{p.signif}") +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.1))) +
+  geom_jitter(height = 0, width = 0.1, aes(colour = dataset)) 
+p
+
+
+
+ggsave(paste0("/home/kvalem/myScratch/projects/2023/NSCLC_gender_2023/05-results/010_analysis_paired_include_guon/","normal_deg_violin_plot_corrected_all_ihw_top8.jpg"), plot = p, width = 10, height = 10)  # Adjust width and height as needed
+
 test_results <- result2 %>%
   group_by(gene_name) %>%
   wilcox_test(log1p_norm ~ sex) %>%
   ungroup()
+
+# Calculate the covariate (mean expression level) for each gene
 covariate <- result2 %>%
   group_by(gene_name) %>%
   summarize(mean_expression = mean(log1p_norm)) %>%
@@ -142,46 +208,33 @@ ihw_result <- ihw(test_results$p, covariate, alpha = 0.1)
 
 # Extract adjusted p-values
 test_results$p.adj <- adj_pvalues(ihw_result)
+stat.test <- test_results |> add_significance("p", cutpoints = c(0, 1e-04, 0.001, 0.01, 0.1, 1),
+                                              symbols = c("****", "***", "**", "*", "ns"))
 
-
-stat.test <- result |>
-  group_by(gene_name)  |>
-  wilcox_test(log1p_norm ~ sex) |>
-  adjust_pvalue(method = "BH") |>
-  add_significance("p.adj")
 stat.test$p.scient <- format(stat.test$p.adj, scientific = TRUE, digits = 3)
 
 stat.test <- stat.test %>% add_xy_position(x = "sex")
-
-p  <-  ggviolin(result, x = "sex", y = "log1p_norm", trim=FALSE, title="Top 20 Normal DE genes corrected") +  
-  # scale_color_manual(values = c("male" = "blue", "female" = "red")) +  # Customize colors for "sex"
-  facet_wrap(~ gene_name) +stat_pvalue_manual(
-    stat.test, bracket.nudge.y = -2, hide.ns = FALSE,
-    label = "{p.scient}") +
-  scale_y_continuous(expand = expansion(mult = c(0.05, 0.1))) +
-  geom_jitter(height = 0, width = 0.1, aes(colour = dataset)) 
-p
-#ggsave(paste0(resDir,"normal_deg_violin_plot_corrected_all.jpg"), plot = p, width = 10, height = 10)  # Adjust width and height as needed
+stat.test.tumor <- stat.test
 
 
-
-stat.test <- result2 |>
-  group_by(gene_name)  |>
-  wilcox_test(log1p_norm ~ sex) |>
-  adjust_pvalue(method ="fdr") |>
-  add_significance("p.adj")
-stat.test$p.scient <- format(stat.test$p.adj, scientific = TRUE, digits = 3)
-
-stat.test <- stat.test %>% add_xy_position(x = "sex")
-
+#stat.test <- result2 |>
+#  group_by(gene_name)  |>
+#  wilcox_test(log1p_norm ~ sex) |>
+#  adjust_pvalue(method ="fdr") |>
+#  add_significance("p.adj", cutpoints = c(0, 1e-04, 0.001, 0.01, 0.1, 1),
+#                   symbols = c("****", "***", "**", "*", "ns"))
+#stat.test$p.scient <- format(stat.test$p.adj, scientific = TRUE, digits = 3)
+#
+#stat.test <- stat.test %>% add_xy_position(x = "sex")
+#stat.test.tumor <- stat.test
 
 p2<-  ggviolin(result2, x = "sex", y = "log1p_norm", trim=FALSE,  title="Top 20 Tumor DE genes corrected") +  
   # scale_color_manual(values = c("male" = "blue", "female" = "red")) +  # Customize colors for "sex"
   facet_wrap(~ gene_name) +stat_pvalue_manual(
-    stat.test, bracket.nudge.y = -2, hide.ns = FALSE,
-    label = "{p.scient}") +
+    stat.test, bracket.nudge.y = -1, hide.ns = FALSE,
+    label =  "{p.signif}") +
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.1))) +
   geom_jitter(height = 0, width = 0.1, aes(colour = dataset)) 
 p2
-#ggsave(paste0(resDir,"tumor_deg_violin_plot_corrected_all.jpg"), plot = p2, width = 10, height = 10)  # Adjust width and height as needed
+ggsave(paste0("/home/kvalem/myScratch/projects/2023/NSCLC_gender_2023/05-results/010_analysis_paired_include_guon/","tumor_deg_violin_plot_corrected_all_ihw_top8.jpg"), plot = p2, width = 10, height = 10)  # Adjust width and height as needed
 
