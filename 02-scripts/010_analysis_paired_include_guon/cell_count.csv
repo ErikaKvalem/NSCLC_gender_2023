@@ -1,0 +1,17 @@
+cell_type,sex,0
+macrophage,female,59801
+CD4+ T cell,female,54058
+macrophage,male,44468
+CD4+ T cell,male,38429
+CD8+ T cell,female,36305
+CD8+ T cell,male,34086
+epithelial cell,male,11285
+epithelial cell,female,9753
+regulatory T cell,female,9498
+B cell,female,9478
+malignant cell,female,9223
+malignant cell,male,7716
+B cell,male,7375
+regulatory T cell,male,6960
+neutrophil,female,3744
+neutrophil,male,2402
