@@ -112,8 +112,8 @@ remove_ensg_version = function(x) gsub("\\.[0-9]*$", "", x)
 #
 #
 # DEBUG parameters 
-sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/pb_cell_type/tumor_vs_normal/CD4_T_cell/samplesheet_male_CD4_T_cell.csv"
-readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/pb_cell_type/tumor_vs_normal/CD4_T_cell/counts_male_CD4_T_cell.csv"
+sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/pb_cell_type/tumor_vs_normal/CD4_T_cell/samplesheet_female_CD4_T_cell.csv"
+readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/pb_cell_type/tumor_vs_normal/CD4_T_cell/counts_female_CD4_T_cell.csv"
 resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/out/" 
 resDir_plot="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/figures/" 
 
@@ -124,12 +124,13 @@ contrast = c(cond_col, c1, c2)
 organism="human"
 n_cpus = 8
 plot_title="DESEQ2"
-prefix = "nsclc_gender_male_CD4_T_cell"
+prefix = "nsclc_gender_female_CD4_T_cell"
 gene_id_type="ENSEMBL"
 sample_col="sample"
-covariate_formula="+ dataset"
+covariate_formula=""
 fdr_cutoff=0.1
 fc_cutoff=1
+paired_grp="donor_id"
 
 
 # Reading the Annotation sample csv file
@@ -139,6 +140,11 @@ rownames(sampleAnno) <- gsub(" ","_",rownames(sampleAnno))
 sampleAnno$sample <- rownames(sampleAnno)
 sampleAnno <- sampleAnno[,-1]
 
+if(is.null(paired_grp)) {
+  design_formula <- as.formula(paste0("~", cond_col, covariate_formula))
+} else {
+  design_formula <- as.formula(paste0("~", paired_grp , " +", cond_col, covariate_formula))
+}
 
 
 # Reading the Count matrix tsv file
@@ -178,7 +184,7 @@ if (!all(rownames(sampleAnno) %in% colnames(count_mat))) {
 }
 
 # Start processing
-design_formula <- as.formula(paste0("~", cond_col, covariate_formula))
+#design_formula <- as.formula(paste0("~", cond_col, covariate_formula))
 
 dds <- DESeqDataSetFromMatrix(countData = round(count_mat),
                               colData = sampleAnno,
@@ -240,46 +246,19 @@ resIHW_gene_name_all = read_csv("/data/projects/2023/LCBiome/nsclc_gender_atlas_
 
 
 my_list = c("RPS4Y1",  "XIST"  ,  "ANGPTL4", "CST6"  ,  "SFTPA2",  "CTSE" ,   "MAL2",    "SFTA3" )
-v <- EnhancedVolcano(resIHW_gene_name_tumor,
-                     lab = resIHW_gene_name_tumor$gene_name,
-                    #selectLab =  my_list, 
+v <- EnhancedVolcano(resIHW_gene_name,
+                     lab = resIHW_gene_name$gene_id,
                      x = 'log2FoldChange',
                      y = 'padj',
-                     #pointSize = 1.0,
+                     pointSize = 1.0,
                      #labSize = 3.0,
                      pCutoff = fdr_cutoff,
-                    drawConnectors = TRUE,
-                    
+                     #drawConnectors = TRUE,
                      FCcutoff = fc_cutoff,
                      caption = paste0("fold change cutoff: ", round(2**fc_cutoff, 1), ", adj.p-value cutoff: ", fdr_cutoff))
+
 v
 
-v <- EnhancedVolcano(resIHW_gene_name_normal,
-                     lab = resIHW_gene_name_normal$gene_name,
-                     #selectLab =  my_list, 
-                     x = 'log2FoldChange',
-                     y = 'padj',
-                     #pointSize = 1.0,
-                     #labSize = 3.0,
-                     pCutoff = fdr_cutoff,
-                     drawConnectors = TRUE,
-                     
-                     FCcutoff = fc_cutoff,
-                     caption = paste0("fold change cutoff: ", round(2**fc_cutoff, 1), ", adj.p-value cutoff: ", fdr_cutoff))
-v
-
-v <- EnhancedVolcano(resIHW_gene_name_all,
-                     lab = resIHW_gene_name_all$gene_name,
-                     #selectLab =  my_list, 
-                     x = 'log2FoldChange',
-                     y = 'padj',
-                     #pointSize = 1.0,
-                     #labSize = 3.0,
-                     pCutoff = fdr_cutoff,
-                     drawConnectors = TRUE,
-                     
-                     FCcutoff = fc_cutoff,
-                     caption = paste0("fold change cutoff: ", round(2**fc_cutoff, 1), ", adj.p-value cutoff: ", fdr_cutoff))
-v
+ggsave(paste0(resDir,prefix,"_volcano_plot.png"), plot = v, width = 6, height = 12, units = "in")
 
 
