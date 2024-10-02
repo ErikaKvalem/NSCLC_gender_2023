@@ -112,8 +112,8 @@ remove_ensg_version = function(x) gsub("\\.[0-9]*$", "", x)
 #
 #
 # DEBUG parameters 
-sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/pb_cell_type/tumor_vs_normal/CD4_T_cell/samplesheet_female_CD4_T_cell.csv"
-readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/pb_cell_type/tumor_vs_normal/CD4_T_cell/counts_female_CD4_T_cell.csv"
+sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/pb_cell_type/tumor_vs_normal/malignant_cell/samplesheet_malignant_cell.csv"
+readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/pb_cell_type/tumor_vs_normal/malignant_cell/counts_malignant_cell.csv"
 resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/out/" 
 resDir_plot="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/figures/" 
 
@@ -124,7 +124,7 @@ contrast = c(cond_col, c1, c2)
 organism="human"
 n_cpus = 8
 plot_title="DESEQ2"
-prefix = "nsclc_gender_female_CD4_T_cell"
+prefix = "nsclc_gender_malignant_cell"
 gene_id_type="ENSEMBL"
 sample_col="sample"
 covariate_formula=""
