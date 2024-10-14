@@ -112,10 +112,10 @@ remove_ensg_version = function(x) gsub("\\.[0-9]*$", "", x)
 #
 #
 # DEBUG parameters 
-sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/pb_cell_type/tumor_vs_normal/regulatory_T_cell/samplesheet_male_regulatory_T_cell.csv"
-readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/pb_cell_type/tumor_vs_normal/regulatory_T_cell/counts_male_regulatory_T_cell.csv"
-resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/deseq2_out/out/" 
-resDir_plot="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/011_analysis_paired_remove_xy/figures/" 
+sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/pb_cell_type_all/tumor_vs_normal/neutrophil/samplesheet_neutrophil.csv"
+readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/pb_cell_type_all/tumor_vs_normal/neutrophil/counts_neutrophil.csv"
+# resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/out/cell_type_all/tumor_vs_normal/" 
+resDir_plot="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/out/cell_type_all/tumor_vs_normal/figures/" 
 
 c1="tumor_primary"
 c2="normal_adjacent"
@@ -124,7 +124,7 @@ contrast = c(cond_col, c1, c2)
 organism="human"
 n_cpus = 8
 plot_title="DESEQ2"
-prefix = "nsclc_gender_male_regulatory_T_cell"
+prefix = "nsclc_gender_neutrohpil"
 gene_id_type="ENSEMBL"
 sample_col="sample"
 covariate_formula=""

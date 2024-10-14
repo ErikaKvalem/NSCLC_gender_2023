@@ -112,22 +112,23 @@ remove_ensg_version = function(x) gsub("\\.[0-9]*$", "", x)
 #
 
 #DEBUG parameters 
-sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/input/samplesheet_tumor.csv"
-readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/tables/input/counts_tumor.csv"
-resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/010_analysis_paired_include_guon/figures/volcano/" 
-c1="male"
-c2="female"
-cond_col ="sex"
+sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/pb_cell_type_all/tumor_vs_normal/neutrophil/samplesheet_neutrophil.csv"
+readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/pb_cell_type_all/tumor_vs_normal/neutrophil/counts_neutrophil.csv"
+resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/out/tumor_vs_normal/figures/" 
+c1="tumor_primary"
+c2="normal_adjacent"
+cond_col ="origin"
 contrast = c(cond_col, c1, c2)
 organism="human"
 n_cpus = 8
 plot_title="DESEQ2"
-prefix = "nsclc_gender_tumor"
+prefix = "nsclc_gender_neutrophil"
 gene_id_type="ENSEMBL"
 sample_col="sample"
-covariate_formula="+ dataset"
+covariate_formula=""
 fdr_cutoff=0.1
 fc_cutoff=1
+paired_grp="donor_id"
 
 
 # Reading the Annotation sample csv file
@@ -137,6 +138,12 @@ rownames(sampleAnno) <- gsub(" ","_",rownames(sampleAnno))
 sampleAnno$sample <- rownames(sampleAnno)
 sampleAnno <- sampleAnno[,-1]
 
+
+if(is.null(paired_grp)) {
+  design_formula <- as.formula(paste0("~", cond_col, covariate_formula))
+} else {
+  design_formula <- as.formula(paste0("~", paired_grp , " +", cond_col, covariate_formula))
+}
 
 
 # Reading the Count matrix tsv file
