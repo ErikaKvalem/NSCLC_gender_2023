@@ -112,10 +112,11 @@ remove_ensg_version = function(x) gsub("\\.[0-9]*$", "", x)
 #
 #
 # DEBUG parameters 
-sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/pb_cell_type_all/tumor_vs_normal/neutrophil/samplesheet_neutrophil.csv"
-readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/pb_cell_type_all/tumor_vs_normal/neutrophil/counts_neutrophil.csv"
+
+sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/pb_cell_type_all/tumor_vs_normal/neutrophil/samplesheet_female_neutrophil.csv"
+readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/pb_cell_type_all/tumor_vs_normal/neutrophil/counts_female_neutrophil.csv"
 # resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/out/cell_type_all/tumor_vs_normal/" 
-resDir_plot="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/out/cell_type_all/tumor_vs_normal/figures/" 
+resDir_plot="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/pb_cell_type_all/tumor_vs_normal/neutrophil/figures/" 
 
 c1="tumor_primary"
 c2="normal_adjacent"
