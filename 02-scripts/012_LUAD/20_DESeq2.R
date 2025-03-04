@@ -113,19 +113,19 @@ remove_ensg_version = function(x) gsub("\\.[0-9]*$", "", x)
 #
 # DEBUG parameters 
 
-sampleAnnotationCSV="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/pb_cell_type_all/tumor_vs_normal/neutrophil/samplesheet_female_neutrophil.csv"
-readCountFile="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/pb_cell_type_all/tumor_vs_normal/neutrophil/counts_female_neutrophil.csv"
+sampleAnnotationCSV="/data/scratch/kvalem/projects/2023/NSCLC_gender_2023/02-scripts/012_LUAD/B_cell_samplesheet.csv"
+readCountFile="/data/scratch/kvalem/projects/2023/NSCLC_gender_2023/02-scripts/012_LUAD/B_cell_count_matrix.csv"
 # resDir="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/out/cell_type_all/tumor_vs_normal/" 
 resDir_plot="/data/projects/2023/LCBiome/nsclc_gender_atlas_tmp/out/012_LUAD/deseq2_out/pb_cell_type_all/tumor_vs_normal/neutrophil/figures/" 
 
-c1="tumor_primary"
-c2="normal_adjacent"
+c1="tumor-primary"
+c2="normal-adjacent"
 cond_col ="origin"
 contrast = c(cond_col, c1, c2)
 organism="human"
 n_cpus = 8
 plot_title="DESEQ2"
-prefix = "nsclc_gender_neutrohpil"
+prefix = "nsclc_gender_bcell"
 gene_id_type="ENSEMBL"
 sample_col="sample"
 covariate_formula=""
@@ -136,6 +136,7 @@ paired_grp="donor_id"
 
 # Reading the Annotation sample csv file
 sampleAnno <- read.csv(sampleAnnotationCSV,row.names=1)
+sampleAnno <- sampleAnno[sampleAnno$gender == "female", ]
 rownames(sampleAnno) <- gsub("-","_",rownames(sampleAnno))
 rownames(sampleAnno) <- gsub(" ","_",rownames(sampleAnno))
 sampleAnno$sample <- rownames(sampleAnno)
@@ -149,8 +150,17 @@ if(is.null(paired_grp)) {
 
 
 # Reading the Count matrix tsv file
-count_mat <- read_csv(readCountFile)
+count_mat <- read.csv(readCountFile)
+
+
+colnames(count_mat) <- gsub("-", "_", colnames(count_mat))
+# Replace "." with "_" in column names
+colnames(count_mat) <- gsub("\\.", "_", colnames(count_mat))
 colnames(count_mat)[1] <- "gene_id"
+
+# Filter count_mat to keep only columns that are present as row names in sampleAnno
+#count_mat <- count_mat[, colnames(count_mat) %in% rownames(sampleAnno)]
+count_mat <- count_mat[, c("gene_id", colnames(count_mat)[colnames(count_mat) %in% rownames(sampleAnno)])]
 
 # colnames(count_mat)[1] <- "gene_id"
 
@@ -176,6 +186,11 @@ count_mat <- count_mat |>
 
 
 colnames(count_mat) <- gsub("-", "_", colnames(count_mat))
+# Replace "." with "_" in column names
+colnames(count_mat) <- gsub("\\.", "_", colnames(count_mat))
+
+# Print updated column names
+print(colnames(count_mat))
 
 
 # Check if names are the same
